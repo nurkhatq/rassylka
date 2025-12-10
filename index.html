@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Sender</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #25D366;
+            --bg: #0f0f0f;
+            --card: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #ffffff;
+            --text-dim: #888888;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        /* Upload */
+        .upload-section {
+            background: var(--card);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section.dragover {
+            border-color: var(--primary);
+            background: rgba(37, 211, 102, 0.05);
+        }
+
+        .upload-label {
+            display: inline-block;
+            padding: 12px 32px;
+            background: var(--primary);
+            color: #000;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .upload-label:hover {
+            opacity: 0.9;
+        }
+
+        #csvFileInput {
+            display: none;
+        }
+
+        .upload-info {
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* Main workspace */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+        }
+
+        /* Current card */
+        .current-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        .card-main {
+            background: rgba(37, 211, 102, 0.08);
+            border: 1px solid rgba(37, 211, 102, 0.2);
+            border-radius: 12px;
+            padding: 48px 32px;
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .whatsapp-icon-main {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            opacity: 0.9;
+        }
+
+        .card-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .card-phone {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Buttons */
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .whatsapp-icon-btn {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Sidebar stats */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stat {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Contacts list */
+        .contacts-section {
+            margin-top: 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .contacts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .contacts-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+
+        .search {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .contacts-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .contacts-grid::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        .contacts-grid::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .contact-item {
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .contact-item:hover {
+            border-color: var(--primary);
+        }
+
+        .contact-item.sent {
+            opacity: 0.5;
+            border-color: var(--primary);
+        }
+
+        .contact-item.current {
+            border-color: var(--primary);
+            background: rgba(37, 211, 102, 0.05);
+        }
+
+        .contact-item-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .contact-item-phone {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .contact-status {
+            font-size: 0.7rem;
+            color: var(--primary);
+            margin-top: 4px;
+        }
+
+        /* Header actions */
+        .header-actions {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-small:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-danger {
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .whatsapp-icon-small {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .success {
+            background: rgba(37, 211, 102, 0.1);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                grid-template-columns: repeat(3, 1fr);
+                flex-direction: row;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-actions {
+                position: static;
+                justify-content: center;
+                margin-bottom: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions hidden" id="headerActions">
+            <button class="btn-small" onclick="openWhatsAppTab()">
+                <svg class="whatsapp-icon-small" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
+                    <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="currentColor"/>
+                </svg>
+                Открыть WhatsApp
+            </button>
+            <button class="btn-small btn-danger" onclick="clearAllData()">
+                🗑️ Очистить данные
+            </button>
+        </div>
+
+        <h1>WhatsApp Sender</h1>
+
+        <!-- Upload -->
+        <div class="upload-section" id="uploadSection">
+            <label for="csvFileInput" class="upload-label">
+                Выбрать CSV файл
+            </label>
+            <input type="file" id="csvFileInput" accept=".csv">
+            <p class="upload-info">Или перетащите файл сюда</p>
+        </div>
+
+        <!-- Workspace -->
+        <div class="workspace hidden" id="workspace">
+            <div class="current-section">
+                <div class="card-main" id="currentCard">
+                    <svg class="whatsapp-icon-main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/>
+                        <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="#25D366"/>
+                    </svg>
+                    <div class="card-name">—</div>
+                    <div class="card-phone">—</div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-secondary" onclick="skipContact()">Пропустить</button>
+                    <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">
+                        <svg class="whatsapp-icon-btn" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
+                            <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="currentColor"/>
+                        </svg>
+                        Отправить
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="stat">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">Всего</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="sentCount">0</div>
+                    <div class="stat-label">Отправлено</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="remainingCount">0</div>
+                    <div class="stat-label">Осталось</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts list -->
+        <div class="contacts-section hidden" id="contactsSection">
+            <div class="contacts-header">
+                <div class="contacts-title">Все контакты</div>
+            </div>
+            <div class="search">
+                <input type="text" id="searchInput" placeholder="Поиск...">
+            </div>
+            <div class="contacts-grid" id="contactsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const messageTemplates = [
+            `Здравствуйте!
+
+После обновлений Kaspi многие продавцы столкнулись с ситуацией, когда номера клиентов стали недоступны.
+Мне удалось найти полностью легальный способ получать контакты и автоматизировал этот процесс.
+
+Если у вас возникали сложности со связью после заказов, могу поделиться информацией.`,
+
+            `Добрый день!
+
+После последних изменений в Kaspi доступ к контактам клиентов стал ограничен.
+У меня есть проверенный и законный способ работать с контактами удобнее.
+
+Если эта тема для вас актуальна, могу рассказать подробнее.`,
+
+            `Приветствую!
+
+Kaspi ввёл ограничения на просмотр номеров, из-за чего часть продавцов потеряла возможность быстро связываться с покупателями.
+Мне удалось найти корректное решение, которое облегчает работу.
+
+Если сталкивались с подобной ситуацией — могу поделиться опытом.`
+        ];
+
+        const variations = {
+            'Здравствуйте': ['Добрый день', 'Приветствую', 'Доброго времени суток'],
+            'доступ к контактам': ['просмотр номеров', 'возможность видеть контакты'],
+            'ограничен': ['затруднён', 'стал недоступен'],
+            'легальный способ': ['корректный способ', 'правильный метод'],
+            'поделиться информацией': ['рассказать подробнее', 'поделиться опытом']
+        };
+
+        let contacts = [];
+        let sentContacts = new Set();
+        let currentIndex = 0;
+        const WHATSAPP_TAB_NAME = 'whatsapp_sender_tab';
+
+        // Load from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('contacts');
+            if (saved) {
+                contacts = JSON.parse(saved);
+            }
+            
+            const savedSent = localStorage.getItem('sentContacts');
+            if (savedSent) {
+                sentContacts = new Set(JSON.parse(savedSent));
+            }
+
+            const savedIndex = localStorage.getItem('currentIndex');
+            if (savedIndex) {
+                currentIndex = parseInt(savedIndex);
+            }
+
+            if (contacts.length > 0) {
+                document.getElementById('uploadSection').classList.add('hidden');
+                document.getElementById('workspace').classList.remove('hidden');
+                document.getElementById('contactsSection').classList.remove('hidden');
+                document.getElementById('headerActions').classList.remove('hidden');
+                initWorkspace();
+            }
+        }
+
+        // Save to localStorage
+        function saveData() {
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            localStorage.setItem('sentContacts', JSON.stringify([...sentContacts]));
+            localStorage.setItem('currentIndex', currentIndex.toString());
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('Удалить все данные и начать заново?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Open WhatsApp in fixed tab
+        function openWhatsAppTab() {
+            window.open('https://web.whatsapp.com', WHATSAPP_TAB_NAME);
+        }
+
+        // File upload
+        const uploadSection = document.getElementById('uploadSection');
+        const csvFileInput = document.getElementById('csvFileInput');
+
+        csvFileInput.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) processCSV(file);
+        });
+
+        uploadSection.addEventListener('dragover', e => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragover');
+        });
+
+        uploadSection.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                processCSV(file);
+            }
+        });
+
+        function processCSV(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    parseCSV(e.target.result);
+                } catch (error) {
+                    showMessage('Ошибка: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            contacts = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const cols = parseCSVLine(line);
+                if (cols.length >= 3) {
+                    contacts.push({
+                        id: cols[0],
+                        name: cols[1],
+                        phone: cols[2],
+                        message: generateMessage()
+                    });
+                }
+            }
+
+            if (contacts.length === 0) {
+                showMessage('CSV файл пуст', 'error');
+                return;
+            }
+
+            saveData();
+            showMessage(`Загружено ${contacts.length} контактов`, 'success');
+            
+            setTimeout(() => {
+                document.getElementById('uploadSection').classList.add('hidden');
+                document.getElementById('workspace').classList.remove('hidden');
+                document.getElementById('contactsSection').classList.remove('hidden');
+                document.getElementById('headerActions').classList.remove('hidden');
+                initWorkspace();
+            }, 1000);
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function generateMessage() {
+            let message = messageTemplates[Math.floor(Math.random() * messageTemplates.length)];
+            
+            for (const [original, replacements] of Object.entries(variations)) {
+                if (message.includes(original)) {
+                    const replacement = replacements[Math.floor(Math.random() * replacements.length)];
+                    message = message.replace(original, replacement);
+                }
+            }
+            
+            return message;
+        }
+
+        function initWorkspace() {
+            currentIndex = contacts.findIndex(c => !sentContacts.has(c.id));
+            if (currentIndex === -1) currentIndex = 0;
+            
+            updateStats();
+            renderContacts();
+            showCurrentContact();
+        }
+
+        function showCurrentContact() {
+            if (currentIndex >= contacts.length) {
+                showMessage('Все контакты обработаны! 🎉', 'success');
+                return;
+            }
+
+            const contact = contacts[currentIndex];
+            const cardHTML = `
+                <svg class="whatsapp-icon-main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/>
+                    <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="#25D366"/>
+                </svg>
+                <div class="card-name">${contact.name}</div>
+                <div class="card-phone">${contact.phone}</div>
+            `;
+            
+            document.getElementById('currentCard').innerHTML = cardHTML;
+            renderContacts();
+        }
+
+        function cleanPhone(phone) {
+            return phone.replace(/[^\d]/g, '');
+        }
+
+        function sendMessage() {
+            const contact = contacts[currentIndex];
+            const cleanedPhone = cleanPhone(contact.phone);
+            const encodedMessage = encodeURIComponent(contact.message);
+            const link = `https://web.whatsapp.com/send?phone=${cleanedPhone}&text=${encodedMessage}`;
+            
+            sentContacts.add(contact.id);
+            currentIndex++;
+            saveData();
+            
+            // Открываем в фиксированной вкладке
+            window.open(link, WHATSAPP_TAB_NAME);
+            
+            // Обновляем интерфейс
+            setTimeout(() => {
+                showCurrentContact();
+                updateStats();
+            }, 500);
+        }
+
+        function skipContact() {
+            currentIndex++;
+            if (currentIndex >= contacts.length) {
+                currentIndex = 0;
+            }
+            saveData();
+            showCurrentContact();
+        }
+
+        function updateStats() {
+            const total = contacts.length;
+            const sent = sentContacts.size;
+            const remaining = total - sent;
+            const progress = total > 0 ? (sent / total) * 100 : 0;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('sentCount').textContent = sent;
+            document.getElementById('remainingCount').textContent = remaining;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function renderContacts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = contacts.filter(c => 
+                c.name.toLowerCase().includes(searchTerm) ||
+                c.phone.includes(searchTerm)
+            );
+
+            document.getElementById('contactsGrid').innerHTML = filtered.map((contact, index) => {
+                const realIndex = contacts.indexOf(contact);
+                const isSent = sentContacts.has(contact.id);
+                const isCurrent = realIndex === currentIndex;
+                
+                return `
+                    <div class="contact-item ${isSent ? 'sent' : ''} ${isCurrent ? 'current' : ''}" 
+                         onclick="jumpToContact(${realIndex})">
+                        <div class="contact-item-name">${contact.name}</div>
+                        <div class="contact-item-phone">${contact.phone}</div>
+                        ${isSent ? '<div class="contact-status">✓ Отправлено</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function jumpToContact(index) {
+            currentIndex = index;
+            saveData();
+            showCurrentContact();
+        }
+
+        function showMessage(text, type) {
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.textContent = text;
+            document.getElementById('uploadSection').appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', renderContacts);
+
+        window.skipContact = skipContact;
+        window.sendMessage = sendMessage;
+        window.jumpToContact = jumpToContact;
+        window.clearAllData = clearAllData;
+        window.openWhatsAppTab = openWhatsAppTab;
+
+        // Load data on start
+        loadData();
+    </script>
+</body>
+</html>
