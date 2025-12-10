@@ -824,8 +824,8 @@ Kaspi ввёл ограничения на просмотр номеров, из
             // Игнорируем если фокус на input
             if (e.target.tagName === 'INPUT') return;
             
-            // O - Отправить
-            if (e.key.toLowerCase() === 'o') {
+            // O (щ на русской) - Отправить
+            if (e.key.toLowerCase() === 'o' || e.code === 'KeyO') {
                 e.preventDefault();
                 const sendBtn = document.getElementById('sendBtn');
                 if (!sendBtn.disabled && !sendBtn.classList.contains('hidden')) {
@@ -833,8 +833,8 @@ Kaspi ввёл ограничения на просмотр номеров, из
                 }
             }
             
-            // S - Пропустить (Skip)
-            if (e.key.toLowerCase() === 's') {
+            // S (ы на русской) - Пропустить (Skip)
+            if (e.key.toLowerCase() === 's' || e.code === 'KeyS') {
                 e.preventDefault();
                 if (!document.getElementById('workspace').classList.contains('hidden')) {
                     skipContact();
