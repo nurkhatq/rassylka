@@ -467,13 +467,13 @@
                 </div>
 
                 <div class="actions">
-                    <button class="btn btn-secondary" onclick="skipContact()">Пропустить</button>
+                    <button class="btn btn-secondary" onclick="skipContact()">Пропустить <span style="opacity: 0.5; font-size: 0.8em;">(S)</span></button>
                     <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">
                         <svg class="whatsapp-icon-btn" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
                             <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="currentColor"/>
                         </svg>
-                        Отправить
+                        Отправить <span style="opacity: 0.5; font-size: 0.8em;">(O)</span>
                     </button>
                 </div>
             </div>
@@ -818,6 +818,29 @@ Kaspi ввёл ограничения на просмотр номеров, из
         window.jumpToContact = jumpToContact;
         window.clearAllData = clearAllData;
         window.openWhatsAppTab = openWhatsAppTab;
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Игнорируем если фокус на input
+            if (e.target.tagName === 'INPUT') return;
+            
+            // O - Отправить
+            if (e.key.toLowerCase() === 'o') {
+                e.preventDefault();
+                const sendBtn = document.getElementById('sendBtn');
+                if (!sendBtn.disabled && !sendBtn.classList.contains('hidden')) {
+                    sendMessage();
+                }
+            }
+            
+            // S - Пропустить (Skip)
+            if (e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                if (!document.getElementById('workspace').classList.contains('hidden')) {
+                    skipContact();
+                }
+            }
+        });
 
         // Load data on start
         loadData();
