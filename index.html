@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Sender</title>
+    <title>WhatsApp Sender Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -14,11 +14,16 @@
 
         :root {
             --primary: #25D366;
+            --secondary: #128C7E;
+            --accent: #34B7F1;
             --bg: #0f0f0f;
             --card: #1a1a1a;
             --border: #2a2a2a;
             --text: #ffffff;
             --text-dim: #888888;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
         body {
@@ -26,12 +31,50 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: var(--card);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         h1 {
@@ -83,14 +126,13 @@
             color: var(--text-dim);
         }
 
-        /* Main workspace */
+        /* Desktop Workspace */
         .workspace {
             display: grid;
             grid-template-columns: 1fr 300px;
             gap: 24px;
         }
 
-        /* Current card */
         .current-section {
             background: var(--card);
             border: 1px solid var(--border);
@@ -105,7 +147,6 @@
             padding: 48px 32px;
             text-align: center;
             margin-bottom: 24px;
-            position: relative;
         }
 
         .whatsapp-icon-main {
@@ -126,6 +167,126 @@
             font-size: 1.1rem;
             color: var(--primary);
             font-variant-numeric: tabular-nums;
+        }
+
+        /* Mobile Workspace */
+        .mobile-workspace {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .mobile-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mobile-card-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .mobile-card-phone {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .call-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 18px 32px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            margin-bottom: 16px;
+        }
+
+        .call-btn:active {
+            transform: scale(0.98);
+        }
+
+        .call-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 24px;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .result-title {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .result-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .result-btn {
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            background: var(--card);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-btn.answered {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .result-btn.answered:active {
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .result-btn.no-answer {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .result-btn.no-answer:active {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .result-icon {
+            font-size: 1.5rem;
         }
 
         /* Buttons */
@@ -157,7 +318,6 @@
 
         .btn-primary:hover:not(:disabled) {
             opacity: 0.9;
-            transform: translateY(-1px);
         }
 
         .btn-primary:disabled {
@@ -180,7 +340,7 @@
             height: 20px;
         }
 
-        /* Sidebar stats */
+        /* Stats */
         .sidebar {
             display: flex;
             flex-direction: column;
@@ -200,6 +360,14 @@
             font-weight: 700;
             color: var(--primary);
             margin-bottom: 8px;
+        }
+
+        .stat.success .stat-value {
+            color: var(--success);
+        }
+
+        .stat.warning .stat-value {
+            color: var(--warning);
         }
 
         .stat-label {
@@ -224,6 +392,44 @@
             transition: width 0.3s ease;
         }
 
+        /* Mobile Stats */
+        .mobile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mobile-stat {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .mobile-stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .mobile-stat.success .mobile-stat-value {
+            color: var(--success);
+        }
+
+        .mobile-stat.warning .mobile-stat-value {
+            color: var(--warning);
+        }
+
+        .mobile-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         /* Contacts list */
         .contacts-section {
             margin-top: 24px;
@@ -244,6 +450,41 @@
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-dim);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .filter-tab.answered.active {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .filter-tab.no-answer.active {
+            background: var(--warning);
+            border-color: var(--warning);
         }
 
         .search {
@@ -302,13 +543,24 @@
         }
 
         .contact-item.sent {
-            opacity: 0.5;
             border-color: var(--primary);
+            background: rgba(37, 211, 102, 0.05);
+        }
+
+        .contact-item.answered {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .contact-item.no-answer {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
         }
 
         .contact-item.current {
             border-color: var(--primary);
-            background: rgba(37, 211, 102, 0.05);
+            background: rgba(37, 211, 102, 0.1);
+            border-width: 2px;
         }
 
         .contact-item-name {
@@ -327,8 +579,20 @@
 
         .contact-status {
             font-size: 0.7rem;
-            color: var(--primary);
             margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .contact-status.sent {
+            color: var(--primary);
+        }
+
+        .contact-status.answered {
+            color: var(--success);
+        }
+
+        .contact-status.no-answer {
+            color: var(--warning);
         }
 
         /* Header actions */
@@ -362,17 +626,12 @@
         }
 
         .btn-danger {
-            color: #ef4444;
+            color: var(--danger);
             border-color: rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
             background: rgba(239, 68, 68, 0.1);
-        }
-
-        .whatsapp-icon-small {
-            width: 16px;
-            height: 16px;
         }
 
         .hidden {
@@ -390,7 +649,7 @@
         .error {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
+            color: var(--danger);
         }
 
         .success {
@@ -411,6 +670,10 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
             .sidebar {
                 grid-template-columns: 1fr;
                 flex-direction: column;
@@ -425,25 +688,22 @@
                 justify-content: center;
                 margin-bottom: 24px;
             }
+
+            .tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-actions hidden" id="headerActions">
-            <button class="btn-small" onclick="openWhatsAppTab()">
-                <svg class="whatsapp-icon-small" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
-                    <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="currentColor"/>
-                </svg>
-                Открыть WhatsApp
-            </button>
             <button class="btn-small btn-danger" onclick="clearAllData()">
-                🗑️ Очистить данные
+                🗑️ Очистить
             </button>
         </div>
 
-        <h1>WhatsApp Sender</h1>
+        <h1>WhatsApp Sender Pro</h1>
 
         <!-- Upload -->
         <div class="upload-section" id="uploadSection">
@@ -454,45 +714,110 @@
             <p class="upload-info">Или перетащите файл сюда</p>
         </div>
 
-        <!-- Workspace -->
-        <div class="workspace hidden" id="workspace">
-            <div class="current-section">
-                <div class="card-main" id="currentCard">
-                    <svg class="whatsapp-icon-main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/>
-                        <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="#25D366"/>
-                    </svg>
-                    <div class="card-name">—</div>
-                    <div class="card-phone">—</div>
-                </div>
+        <!-- Tabs -->
+        <div class="tabs hidden" id="tabsContainer">
+            <button class="tab active" onclick="switchTab('desktop')">💻 Десктоп</button>
+            <button class="tab" onclick="switchTab('mobile')">📱 Мобильная</button>
+        </div>
 
-                <div class="actions">
-                    <button class="btn btn-secondary" onclick="skipContact()">Пропустить <span style="opacity: 0.5; font-size: 0.8em;">(S)</span></button>
-                    <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">
-                        <svg class="whatsapp-icon-btn" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
-                            <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="currentColor"/>
+        <!-- Desktop Tab -->
+        <div class="tab-content active" id="desktopTab">
+            <div class="workspace hidden" id="workspace">
+                <div class="current-section">
+                    <div class="card-main" id="currentCard">
+                        <svg class="whatsapp-icon-main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/>
+                            <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="#25D366"/>
                         </svg>
-                        Отправить <span style="opacity: 0.5; font-size: 0.8em;">(O)</span>
-                    </button>
-                </div>
-            </div>
+                        <div class="card-name">—</div>
+                        <div class="card-phone">—</div>
+                    </div>
 
-            <div class="sidebar">
-                <div class="stat">
-                    <div class="stat-value" id="totalCount">0</div>
-                    <div class="stat-label">Всего</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="sentCount">0</div>
-                    <div class="stat-label">Отправлено</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="skipContact()">Пропустить <span style="opacity: 0.5; font-size: 0.8em;">(S)</span></button>
+                        <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">
+                            <svg class="whatsapp-icon-btn" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
+                                <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45zm-8.475 18.297c-1.778 0-3.52-.478-5.035-1.377l-.36-.214-3.74.98 1.001-3.648-.236-.375C2.452 15.303 1.94 13.63 1.942 11.892c.003-5.57 4.551-10.1 10.145-10.1 2.708.001 5.25 1.055 7.155 2.968 1.905 1.911 2.954 4.45 2.953 7.147-.003 5.57-4.552 10.1-10.15 10.1v-.001z" fill="currentColor"/>
+                            </svg>
+                            Отправить <span style="opacity: 0.5; font-size: 0.8em;">(O)</span>
+                        </button>
                     </div>
                 </div>
-                <div class="stat">
-                    <div class="stat-value" id="remainingCount">0</div>
-                    <div class="stat-label">Осталось</div>
+
+                <div class="sidebar">
+                    <div class="stat">
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">Всего</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="sentCount">0</div>
+                        <div class="stat-label">Отправлено</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    <div class="stat success">
+                        <div class="stat-value" id="answeredCount">0</div>
+                        <div class="stat-label">Брали трубку</div>
+                    </div>
+                    <div class="stat warning">
+                        <div class="stat-value" id="noAnswerCount">0</div>
+                        <div class="stat-label">Не брали</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Tab -->
+        <div class="tab-content" id="mobileTab">
+            <div class="mobile-workspace hidden" id="mobileWorkspace">
+                <div class="mobile-stats">
+                    <div class="mobile-stat">
+                        <div class="mobile-stat-value" id="mobileTotalCount">0</div>
+                        <div class="mobile-stat-label">Всего</div>
+                    </div>
+                    <div class="mobile-stat">
+                        <div class="mobile-stat-value" id="mobileRemainingCount">0</div>
+                        <div class="mobile-stat-label">Осталось</div>
+                    </div>
+                    <div class="mobile-stat success">
+                        <div class="mobile-stat-value" id="mobileAnsweredCount">0</div>
+                        <div class="mobile-stat-label">Брали</div>
+                    </div>
+                    <div class="mobile-stat warning">
+                        <div class="mobile-stat-value" id="mobileNoAnswerCount">0</div>
+                        <div class="mobile-stat-label">Не брали</div>
+                    </div>
+                </div>
+
+                <div class="mobile-card" id="mobileCard">
+                    <div class="mobile-card-name">—</div>
+                    <div class="mobile-card-phone">—</div>
+                    <a href="#" class="call-btn" id="callBtn">
+                        <svg class="call-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" fill="currentColor"/>
+                        </svg>
+                        Позвонить
+                    </a>
+
+                    <div class="result-section" id="resultSection">
+                        <div class="result-title">Как прошел звонок?</div>
+                        <div class="result-buttons">
+                            <button class="result-btn answered" onclick="markAsAnswered()">
+                                <span class="result-icon">✓</span>
+                                <span>Взял трубку</span>
+                            </button>
+                            <button class="result-btn no-answer" onclick="markAsNoAnswer()">
+                                <span class="result-icon">✗</span>
+                                <span>Не взял</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="actions" style="margin-top: 16px;">
+                        <button class="btn btn-secondary" onclick="skipContact()">Пропустить</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -502,6 +827,15 @@
             <div class="contacts-header">
                 <div class="contacts-title">Все контакты</div>
             </div>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterContacts('all')">Все</button>
+                <button class="filter-tab" onclick="filterContacts('pending')">Не обработаны</button>
+                <button class="filter-tab answered" onclick="filterContacts('answered')">Брали трубку</button>
+                <button class="filter-tab no-answer" onclick="filterContacts('no_answer')">Не брали</button>
+                <button class="filter-tab" onclick="filterContacts('sent')">WhatsApp</button>
+            </div>
+
             <div class="search">
                 <input type="text" id="searchInput" placeholder="Поиск...">
             </div>
@@ -543,7 +877,11 @@ Kaspi ввёл ограничения на просмотр номеров, из
 
         let contacts = [];
         let sentContacts = new Set();
+        let answeredContacts = new Set();
+        let noAnswerContacts = new Set();
         let currentIndex = 0;
+        let currentFilter = 'all';
+        let callInitiated = false;
         const WHATSAPP_TAB_NAME = 'whatsapp_sender_tab';
 
         // Load from localStorage
@@ -558,6 +896,16 @@ Kaspi ввёл ограничения на просмотр номеров, из
                 sentContacts = new Set(JSON.parse(savedSent));
             }
 
+            const savedAnswered = localStorage.getItem('answeredContacts');
+            if (savedAnswered) {
+                answeredContacts = new Set(JSON.parse(savedAnswered));
+            }
+
+            const savedNoAnswer = localStorage.getItem('noAnswerContacts');
+            if (savedNoAnswer) {
+                noAnswerContacts = new Set(JSON.parse(savedNoAnswer));
+            }
+
             const savedIndex = localStorage.getItem('currentIndex');
             if (savedIndex) {
                 currentIndex = parseInt(savedIndex);
@@ -565,7 +913,9 @@ Kaspi ввёл ограничения на просмотр номеров, из
 
             if (contacts.length > 0) {
                 document.getElementById('uploadSection').classList.add('hidden');
+                document.getElementById('tabsContainer').classList.remove('hidden');
                 document.getElementById('workspace').classList.remove('hidden');
+                document.getElementById('mobileWorkspace').classList.remove('hidden');
                 document.getElementById('contactsSection').classList.remove('hidden');
                 document.getElementById('headerActions').classList.remove('hidden');
                 initWorkspace();
@@ -576,6 +926,8 @@ Kaspi ввёл ограничения на просмотр номеров, из
         function saveData() {
             localStorage.setItem('contacts', JSON.stringify(contacts));
             localStorage.setItem('sentContacts', JSON.stringify([...sentContacts]));
+            localStorage.setItem('answeredContacts', JSON.stringify([...answeredContacts]));
+            localStorage.setItem('noAnswerContacts', JSON.stringify([...noAnswerContacts]));
             localStorage.setItem('currentIndex', currentIndex.toString());
         }
 
@@ -587,9 +939,18 @@ Kaspi ввёл ограничения на просмотр номеров, из
             }
         }
 
-        // Open WhatsApp in fixed tab
-        function openWhatsAppTab() {
-            window.open('https://web.whatsapp.com', WHATSAPP_TAB_NAME);
+        // Switch tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'desktop') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('desktopTab').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('mobileTab').classList.add('active');
+            }
         }
 
         // File upload
@@ -660,7 +1021,9 @@ Kaspi ввёл ограничения на просмотр номеров, из
             
             setTimeout(() => {
                 document.getElementById('uploadSection').classList.add('hidden');
+                document.getElementById('tabsContainer').classList.remove('hidden');
                 document.getElementById('workspace').classList.remove('hidden');
+                document.getElementById('mobileWorkspace').classList.remove('hidden');
                 document.getElementById('contactsSection').classList.remove('hidden');
                 document.getElementById('headerActions').classList.remove('hidden');
                 initWorkspace();
@@ -701,7 +1064,7 @@ Kaspi ввёл ограничения на просмотр номеров, из
         }
 
         function initWorkspace() {
-            currentIndex = contacts.findIndex(c => !sentContacts.has(c.id));
+            currentIndex = contacts.findIndex(c => !sentContacts.has(c.id) && !answeredContacts.has(c.id) && !noAnswerContacts.has(c.id));
             if (currentIndex === -1) currentIndex = 0;
             
             updateStats();
@@ -716,6 +1079,8 @@ Kaspi ввёл ограничения на просмотр номеров, из
             }
 
             const contact = contacts[currentIndex];
+            
+            // Desktop card
             const cardHTML = `
                 <svg class="whatsapp-icon-main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/>
@@ -726,7 +1091,45 @@ Kaspi ввёл ограничения на просмотр номеров, из
             `;
             
             document.getElementById('currentCard').innerHTML = cardHTML;
+
+            // Mobile card
+            document.querySelector('.mobile-card-name').textContent = contact.name;
+            document.querySelector('.mobile-card-phone').textContent = contact.phone;
+            
+            const cleanedPhone = cleanPhone(contact.phone);
+            document.getElementById('callBtn').href = `tel:${cleanedPhone}`;
+            document.getElementById('callBtn').onclick = initiateCall;
+            
+            // Hide result section initially
+            document.getElementById('resultSection').classList.remove('active');
+            callInitiated = false;
+
             renderContacts();
+        }
+
+        function initiateCall(e) {
+            callInitiated = true;
+            setTimeout(() => {
+                document.getElementById('resultSection').classList.add('active');
+            }, 2000);
+        }
+
+        function markAsAnswered() {
+            const contact = contacts[currentIndex];
+            answeredContacts.add(contact.id);
+            currentIndex++;
+            saveData();
+            showCurrentContact();
+            updateStats();
+        }
+
+        function markAsNoAnswer() {
+            const contact = contacts[currentIndex];
+            noAnswerContacts.add(contact.id);
+            currentIndex++;
+            saveData();
+            showCurrentContact();
+            updateStats();
         }
 
         function cleanPhone(phone) {
@@ -743,10 +1146,8 @@ Kaspi ввёл ограничения на просмотр номеров, из
             currentIndex++;
             saveData();
             
-            // Открываем в фиксированной вкладке
             window.open(link, WHATSAPP_TAB_NAME);
             
-            // Обновляем интерфейс
             setTimeout(() => {
                 showCurrentContact();
                 updateStats();
@@ -765,33 +1166,84 @@ Kaspi ввёл ограничения на просмотр номеров, из
         function updateStats() {
             const total = contacts.length;
             const sent = sentContacts.size;
-            const remaining = total - sent;
-            const progress = total > 0 ? (sent / total) * 100 : 0;
+            const answered = answeredContacts.size;
+            const noAnswer = noAnswerContacts.size;
+            const processed = sent + answered + noAnswer;
+            const remaining = total - processed;
+            const progress = total > 0 ? (processed / total) * 100 : 0;
 
+            // Desktop stats
             document.getElementById('totalCount').textContent = total;
             document.getElementById('sentCount').textContent = sent;
-            document.getElementById('remainingCount').textContent = remaining;
+            document.getElementById('answeredCount').textContent = answered;
+            document.getElementById('noAnswerCount').textContent = noAnswer;
             document.getElementById('progressFill').style.width = progress + '%';
+
+            // Mobile stats
+            document.getElementById('mobileTotalCount').textContent = total;
+            document.getElementById('mobileRemainingCount').textContent = remaining;
+            document.getElementById('mobileAnsweredCount').textContent = answered;
+            document.getElementById('mobileNoAnswerCount').textContent = noAnswer;
+        }
+
+        function filterContacts(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderContacts();
         }
 
         function renderContacts() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = contacts.filter(c => 
-                c.name.toLowerCase().includes(searchTerm) ||
-                c.phone.includes(searchTerm)
-            );
+            
+            let filtered = contacts.filter(c => {
+                const matchesSearch = c.name.toLowerCase().includes(searchTerm) || c.phone.includes(searchTerm);
+                
+                if (!matchesSearch) return false;
+                
+                switch(currentFilter) {
+                    case 'all':
+                        return true;
+                    case 'pending':
+                        return !sentContacts.has(c.id) && !answeredContacts.has(c.id) && !noAnswerContacts.has(c.id);
+                    case 'sent':
+                        return sentContacts.has(c.id);
+                    case 'answered':
+                        return answeredContacts.has(c.id);
+                    case 'no_answer':
+                        return noAnswerContacts.has(c.id);
+                    default:
+                        return true;
+                }
+            });
 
             document.getElementById('contactsGrid').innerHTML = filtered.map((contact, index) => {
                 const realIndex = contacts.indexOf(contact);
                 const isSent = sentContacts.has(contact.id);
+                const isAnswered = answeredContacts.has(contact.id);
+                const isNoAnswer = noAnswerContacts.has(contact.id);
                 const isCurrent = realIndex === currentIndex;
                 
+                let statusClass = '';
+                let statusText = '';
+                
+                if (isAnswered) {
+                    statusClass = 'answered';
+                    statusText = '✓ Взял трубку';
+                } else if (isNoAnswer) {
+                    statusClass = 'no-answer';
+                    statusText = '✗ Не взял';
+                } else if (isSent) {
+                    statusClass = 'sent';
+                    statusText = '✓ WhatsApp';
+                }
+                
                 return `
-                    <div class="contact-item ${isSent ? 'sent' : ''} ${isCurrent ? 'current' : ''}" 
+                    <div class="contact-item ${statusClass} ${isCurrent ? 'current' : ''}" 
                          onclick="jumpToContact(${realIndex})">
                         <div class="contact-item-name">${contact.name}</div>
                         <div class="contact-item-phone">${contact.phone}</div>
-                        ${isSent ? '<div class="contact-status">✓ Отправлено</div>' : ''}
+                        ${statusText ? `<div class="contact-status ${statusClass}">${statusText}</div>` : ''}
                     </div>
                 `;
             }).join('');
@@ -813,18 +1265,20 @@ Kaspi ввёл ограничения на просмотр номеров, из
 
         document.getElementById('searchInput').addEventListener('input', renderContacts);
 
+        window.switchTab = switchTab;
         window.skipContact = skipContact;
         window.sendMessage = sendMessage;
         window.jumpToContact = jumpToContact;
         window.clearAllData = clearAllData;
-        window.openWhatsAppTab = openWhatsAppTab;
+        window.filterContacts = filterContacts;
+        window.markAsAnswered = markAsAnswered;
+        window.markAsNoAnswer = markAsNoAnswer;
 
-        // Keyboard shortcuts
+        // Keyboard shortcuts (только для desktop)
         document.addEventListener('keydown', (e) => {
-            // Игнорируем если фокус на input
             if (e.target.tagName === 'INPUT') return;
+            if (document.getElementById('mobileTab').classList.contains('active')) return;
             
-            // O (щ на русской) - Отправить
             if (e.key.toLowerCase() === 'o' || e.code === 'KeyO') {
                 e.preventDefault();
                 const sendBtn = document.getElementById('sendBtn');
@@ -833,7 +1287,6 @@ Kaspi ввёл ограничения на просмотр номеров, из
                 }
             }
             
-            // S (ы на русской) - Пропустить (Skip)
             if (e.key.toLowerCase() === 's' || e.code === 'KeyS') {
                 e.preventDefault();
                 if (!document.getElementById('workspace').classList.contains('hidden')) {
@@ -842,7 +1295,6 @@ Kaspi ввёл ограничения на просмотр номеров, из
             }
         });
 
-        // Load data on start
         loadData();
     </script>
 </body>
