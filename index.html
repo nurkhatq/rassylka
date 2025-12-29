@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>( ͡~ ͜ʖ ͡°)</title>
+    <title>WhatsApp Sender Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1399,14 +1399,30 @@ Kaspi ввёл ограничения на просмотр номеров, из
         }
 
         function cleanPhone(phone) {
-            return phone.replace(/[^\d]/g, '');
+            // Убираем все символы кроме цифр
+            let cleaned = phone.replace(/[^\d]/g, '');
+            
+            // Если номер начинается с 8, заменяем на 7
+            if (cleaned.startsWith('8') && cleaned.length === 11) {
+                cleaned = '7' + cleaned.substring(1);
+            }
+            
+            // Если номер начинается с 7 и длина 11, добавляем +
+            if (cleaned.startsWith('7') && cleaned.length === 11) {
+                return '+' + cleaned;
+            }
+            
+            // Если уже есть +, возвращаем как есть
+            return phone.includes('+') ? phone.replace(/[^\d+]/g, '') : cleaned;
         }
 
         function sendMessage() {
             const contact = contacts[currentIndex];
             const cleanedPhone = cleanPhone(contact.phone);
+            // Для WhatsApp убираем + и оставляем только цифры
+            const whatsappPhone = cleanedPhone.replace(/[^\d]/g, '');
             const encodedMessage = encodeURIComponent(contact.message);
-            const link = `https://web.whatsapp.com/send?phone=${cleanedPhone}&text=${encodedMessage}`;
+            const link = `https://web.whatsapp.com/send?phone=${whatsappPhone}&text=${encodedMessage}`;
             
             sentContacts.add(contact.id);
             currentIndex++;
