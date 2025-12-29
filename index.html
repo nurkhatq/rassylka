@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Sender Pro</title>
+    <title>( ͡~ ͜ʖ ͡°)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -32,11 +32,13 @@
             color: var(--text);
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
         }
 
         /* Tabs */
@@ -671,7 +673,32 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 12px;
+                padding: 8px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+                margin-bottom: 16px;
+            }
+
+            .tabs {
+                padding: 4px;
+                gap: 4px;
+                margin-bottom: 16px;
+            }
+
+            .tab {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .upload-section {
+                padding: 40px 20px;
+            }
+
+            .upload-label {
+                padding: 10px 24px;
+                font-size: 0.9rem;
             }
 
             .sidebar {
@@ -679,18 +706,259 @@
                 flex-direction: column;
             }
 
+            .workspace {
+                gap: 16px;
+            }
+
+            .current-section {
+                padding: 16px;
+            }
+
+            .card-main {
+                padding: 32px 16px;
+                margin-bottom: 16px;
+            }
+
+            .whatsapp-icon-main {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 16px;
+            }
+
+            .card-name {
+                font-size: 1.2rem;
+                margin-bottom: 8px;
+            }
+
+            .card-phone {
+                font-size: 1rem;
+            }
+
+            .actions {
+                gap: 8px;
+                flex-direction: column;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+
+            .stat {
+                padding: 16px;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            /* Mobile workspace */
+            .mobile-workspace {
+                padding: 0;
+            }
+
+            .mobile-stats {
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+
+            .mobile-stat {
+                padding: 12px 8px;
+            }
+
+            .mobile-stat-value {
+                font-size: 1.5rem;
+            }
+
+            .mobile-stat-label {
+                font-size: 0.7rem;
+            }
+
+            .mobile-card {
+                padding: 20px 16px;
+                margin-bottom: 16px;
+            }
+
+            .mobile-card-name {
+                font-size: 1.1rem;
+                margin-bottom: 12px;
+            }
+
+            .mobile-card-phone {
+                font-size: 1.2rem;
+                margin-bottom: 20px;
+            }
+
+            .call-btn {
+                padding: 14px 24px;
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+
+            .call-icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .result-section {
+                margin-top: 16px;
+            }
+
+            .result-title {
+                font-size: 0.85rem;
+                margin-bottom: 10px;
+            }
+
+            .result-buttons {
+                gap: 8px;
+            }
+
+            .result-btn {
+                padding: 12px 16px;
+                font-size: 0.85rem;
+            }
+
+            .result-icon {
+                font-size: 1.3rem;
+            }
+
+            /* Contacts */
+            .contacts-section {
+                padding: 16px;
+                margin-top: 16px;
+            }
+
+            .contacts-header {
+                margin-bottom: 12px;
+            }
+
+            .contacts-title {
+                font-size: 0.9rem;
+            }
+
+            .filter-tabs {
+                gap: 6px;
+                margin-bottom: 12px;
+                flex-wrap: wrap;
+            }
+
+            .filter-tab {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .search {
+                margin-bottom: 12px;
+            }
+
+            #searchInput {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
             .contacts-grid {
                 grid-template-columns: 1fr;
+                gap: 6px;
+                max-height: 250px;
+            }
+
+            .contact-item {
+                padding: 10px;
+            }
+
+            .contact-item-name {
+                font-size: 0.8rem;
+            }
+
+            .contact-item-phone {
+                font-size: 0.7rem;
+            }
+
+            .contact-status {
+                font-size: 0.65rem;
             }
 
             .header-actions {
                 position: static;
                 justify-content: center;
-                margin-bottom: 24px;
+                margin-bottom: 16px;
+                flex-wrap: wrap;
             }
 
-            .tabs {
-                flex-direction: column;
+            .btn-small {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            body {
+                padding: 6px;
+            }
+
+            h1 {
+                font-size: 1.1rem;
+                margin-bottom: 12px;
+            }
+
+            .mobile-stats {
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+
+            .mobile-stat {
+                padding: 10px 6px;
+            }
+
+            .mobile-stat-value {
+                font-size: 1.3rem;
+            }
+
+            .mobile-stat-label {
+                font-size: 0.65rem;
+            }
+
+            .mobile-card {
+                padding: 16px 12px;
+            }
+
+            .mobile-card-name {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+
+            .mobile-card-phone {
+                font-size: 1.1rem;
+                margin-bottom: 16px;
+            }
+
+            .call-btn {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+                gap: 8px;
+            }
+
+            .result-btn {
+                padding: 10px 12px;
+                font-size: 0.8rem;
+                gap: 6px;
+            }
+
+            .result-icon {
+                font-size: 1.2rem;
+            }
+
+            .filter-tabs {
+                gap: 4px;
+            }
+
+            .filter-tab {
+                padding: 5px 10px;
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -815,9 +1083,7 @@
                         </div>
                     </div>
 
-                    <div class="actions" style="margin-top: 16px;">
-                        <button class="btn btn-secondary" onclick="skipContact()">Пропустить</button>
-                    </div>
+                    <button class="btn btn-secondary" onclick="skipContact()" style="width: 100%; margin-top: 16px;">Пропустить</button>
                 </div>
             </div>
         </div>
