@@ -88,6 +88,8 @@ function getDb() {
   return neon(url);
 }
 
+const OLD_DEFAULT_RU = 'Здравствуйте! Меня зовут [Имя]. Я специалист по продвижению на Kaspi.kz. Могу я поговорить с вами о возможностях для вашего магазина?';
+
 async function ensureTables() {
   const sql = getDb();
   await sql`
@@ -109,6 +111,19 @@ async function ensureTables() {
     INSERT INTO scripts (id, kz, ru)
     VALUES ('default', ${DEFAULT_SCRIPTS.kz}, ${DEFAULT_SCRIPTS.ru})
     ON CONFLICT (id) DO NOTHING
+  `;
+  await sql`
+    UPDATE scripts SET kz = ${DEFAULT_SCRIPTS.kz}, ru = ${DEFAULT_SCRIPTS.ru}
+    WHERE id = 'default' AND ru = ${OLD_DEFAULT_RU}
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS call_statuses (
+      merchant_id TEXT NOT NULL,
+      manager_id  TEXT NOT NULL,
+      status      TEXT NOT NULL,
+      updated_at  TIMESTAMPTZ DEFAULT NOW(),
+      PRIMARY KEY (merchant_id, manager_id)
+    )
   `;
 }
 
@@ -155,4 +170,27 @@ export async function setScripts(scripts: Scripts): Promise<void> {
     INSERT INTO scripts (id, kz, ru) VALUES ('default', ${scripts.kz}, ${scripts.ru})
     ON CONFLICT (id) DO UPDATE SET kz = ${scripts.kz}, ru = ${scripts.ru}
   `;
+}
+
+export async function getCallStatuses(managerId: string): Promise<Record<string, string>> {
+  const sql = getDb();
+  await ensureTables();
+  const rows = await sql`SELECT merchant_id, status FROM call_statuses WHERE manager_id = ${managerId}`;
+  const result: Record<string, string> = {};
+  for (const row of rows as any[]) result[row.merchant_id] = row.status;
+  return result;
+}
+
+export async function setCallStatus(managerId: string, merchantId: string, status: string | null): Promise<void> {
+  const sql = getDb();
+  await ensureTables();
+  if (!status) {
+    await sql`DELETE FROM call_statuses WHERE merchant_id = ${merchantId} AND manager_id = ${managerId}`;
+  } else {
+    await sql`
+      INSERT INTO call_statuses (merchant_id, manager_id, status)
+      VALUES (${merchantId}, ${managerId}, ${status})
+      ON CONFLICT (merchant_id, manager_id) DO UPDATE SET status = ${status}, updated_at = NOW()
+    `;
+  }
 }
