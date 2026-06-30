@@ -68,8 +68,23 @@ const DEFAULT_SCRIPTS: Scripts = {
 };
 
 function getDb() {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error('DATABASE_URL не задан');
+  // Try multiple env vars — Neon/Vercel may expose different ones
+  const raw =
+    process.env.DATABASE_URL_UNPOOLED ||
+    process.env.POSTGRES_URL_NON_POOLING ||
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL;
+
+  if (!raw) throw new Error('DATABASE_URL не задан');
+
+  // Strip params unsupported by @neondatabase/serverless HTTP driver
+  const url = raw
+    .replace(/[?&]channel_binding=[^&]*/g, '')
+    .replace(/[?&]connect_timeout=[^&]*/g, '')
+    .replace(/\?&/, '?')
+    .replace(/&&/g, '&')
+    .replace(/[?&]$/, '');
+
   return neon(url);
 }
 
