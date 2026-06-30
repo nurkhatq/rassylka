@@ -3,16 +3,14 @@ export function calculatePrice(merchant: {
   orders_segment?: string;
   sales_count?: number | null;
 }): number {
-  const seg = parseInt(merchant.orders_segment || '0', 10) || merchant.sales_count || 0;
-
-  if (seg >= 50000) return 150000;
-  if (seg >= 10000) return 80000;
-  if (seg >= 5000)  return 50000;
-  if (seg >= 2000)  return 35000;
-  if (seg >= 1000)  return 25000;
-  if (seg >= 500)   return 18000;
-  if (seg >= 100)   return 12000;
-  return 8000;
+  // Основываемся на сегменте — он уже рассчитан из sales_count
+  switch (merchant.segment) {
+    case 'Топ':      return 50000;  // 10k+ продаж
+    case 'Хорошие':  return 30000;  // 1k–10k продаж
+    case 'Средние':  return 20000;  // 100–1k продаж
+    case 'Малые':    return 12000;  // <100 продаж
+    default:         return 15000;
+  }
 }
 
 export function formatPrice(price: number): string {
