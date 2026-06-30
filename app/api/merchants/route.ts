@@ -11,10 +11,26 @@ let cachedMerchants: Merchant[] | null = null;
 
 function loadMerchants(): Merchant[] {
   if (cachedMerchants) return cachedMerchants;
-  const filePath = path.join(process.cwd(), 'data', 'merchants.json');
-  const raw = fs.readFileSync(filePath, 'utf-8');
-  cachedMerchants = JSON.parse(raw) as Merchant[];
-  return cachedMerchants;
+
+  // Try multiple paths — Next.js serverless bundles can vary
+  const candidates = [
+    path.join(process.cwd(), 'data', 'merchants.json'),
+    path.join(process.cwd(), '.next', 'server', 'data', 'merchants.json'),
+    path.join(__dirname, '..', '..', '..', '..', 'data', 'merchants.json'),
+  ];
+
+  for (const filePath of candidates) {
+    try {
+      if (fs.existsSync(filePath)) {
+        cachedMerchants = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Merchant[];
+        return cachedMerchants;
+      }
+    } catch {
+      // try next path
+    }
+  }
+
+  throw new Error(`merchants.json не найден. Пробовал: ${candidates.join(', ')}`);
 }
 
 export async function GET(req: NextRequest) {
@@ -24,22 +40,34 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const managers = await getManagers();
-  const managerIds = managers.map((m) => m.id);
-  const merchants = loadMerchants();
-
-  if (session.type === 'admin') {
-    // Admin gets all merchants with distribution info
-    return NextResponse.json({
-      merchants,
-      managerIds,
-      managers,
-    });
+  let managers;
+  try {
+    managers = await getManagers();
+  } catch (e) {
+    return NextResponse.json({ error: 'DB error: ' + String(e) }, { status: 500 });
   }
 
-  // Manager gets their assigned merchants
-  const managerId = session.managerId!;
-  const assigned = distributeToManager(merchants, managerId, managerIds);
+  let merchants: Merchant[];
+  try {
+    merchants = loadMerchants();
+  } catch (e) {
+    return NextResponse.json({ error: 'File error: ' + String(e) }, { status: 500 });
+  }
 
-  return NextResponse.json({ merchants: assigned });
+  const managerIds = managers.map((m) => m.id);
+
+  if (session.type === 'admin') {
+    return NextResponse.json({ merchants, managerIds, managers });
+  }
+
+  const managerId = session.managerId!;
+
+  if (!managerIds.includes(managerId)) {
+    return NextResponse.json({
+      error: `Manager ${managerId} not found in DB. DB has: ${managerIds.length} managers`,
+    }, { status: 403 });
+  }
+
+  const assigned = distributeToManager(merchants, managerId, managerIds);
+  return NextResponse.json({ merchants: assigned, total: merchants.length, assigned: assigned.length });
 }

@@ -2,6 +2,9 @@
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@neondatabase/serverless'],
+    outputFileTracingIncludes: {
+      '/api/merchants': ['./data/merchants.json'],
+    },
   },
 };
 
