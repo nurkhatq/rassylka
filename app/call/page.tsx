@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { calculatePrice, formatPrice } from '@/lib/pricing';
 
 interface Merchant {
   merchant_id: string;
@@ -324,6 +325,28 @@ export default function CallPage() {
                 </div>
               </div>
 
+              {/* Price */}
+              {(() => {
+                const price = calculatePrice(selected);
+                return (
+                  <div style={{
+                    background: 'rgba(37,211,102,0.08)',
+                    border: '1px solid rgba(37,211,102,0.3)',
+                    borderRadius: 8,
+                    padding: '12px 16px',
+                    marginBottom: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                    <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>Рекомендуемая цена</span>
+                    <span style={{ color: '#25D366', fontWeight: 700, fontSize: 22 }}>
+                      {formatPrice(price)}
+                    </span>
+                  </div>
+                );
+              })()}
+
               {/* Script */}
               <div style={{ marginBottom: 20 }}>
                 <div className="script-tabs">
@@ -340,8 +363,9 @@ export default function CallPage() {
                     КАЗ
                   </button>
                 </div>
-                <div className="script-box">
-                  {scriptTab === 'ru' ? scripts.ru || 'Скрипт не задан' : scripts.kz || 'Скрипт не задан'}
+                <div className="script-box" style={{ whiteSpace: 'pre-wrap' }}>
+                  {(scriptTab === 'ru' ? scripts.ru : scripts.kz || 'Скрипт не задан')
+                    .replace(/\[ЦЕНА\]/g, formatPrice(calculatePrice(selected)))}
                 </div>
               </div>
 
