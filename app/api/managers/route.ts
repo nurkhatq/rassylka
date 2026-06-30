@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSessionFromHeader } from '@/lib/auth';
+import { getManagers, addManager } from '@/lib/storage';
+import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
-import { getSessionFromHeader } from '@/lib/auth';
-import { getManagers, setManagers } from '@/lib/storage';
-import crypto from 'crypto';
 
 export async function GET(req: NextRequest) {
   const session = getSessionFromHeader(req.headers.get('cookie'));
@@ -25,10 +25,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Name and password required' }, { status: 400 });
   }
 
-  const managers = await getManagers();
   const id = crypto.randomUUID();
-  managers.push({ id, name, password });
-  await setManagers(managers);
+  await addManager({ id, name, password });
 
   return NextResponse.json({ ok: true, id });
 }
